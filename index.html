@@ -83,7 +83,6 @@
 </div>
 
 <script type="module">
-    // استيراد Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
@@ -100,15 +99,18 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ربط الدوال بالنافذة لتعمل مع HTML مباشرة
-    window.db = db;
-    window.addDoc = addDoc;
-    window.collection = collection;
-    window.serverTimestamp = serverTimestamp;
+    // تجهيز الدوال للعمل مع الكود العادي
+    window.saveToFirebase = async (data) => {
+        try {
+            await addDoc(collection(db, "student_results"), {
+                ...data,
+                timestamp: serverTimestamp()
+            });
+        } catch (e) { console.error("Firebase Error:", e); }
+    };
 </script>
 
 <script>
-    // جميع بياناتك الأصلية 
     const rawData = [
         { q: "ريش : طائر", opts: ["شعر : ثدييات", "جلد : إنسان", "وبر : إبل", "صوف : غنم"], ans: "شعر : ثدييات", tip: "العلاقة (غطاء الجسم للكائن)؛ الريش يغطي الطائر، والشعر يغطي الثدييات كفئة عامة.", cat: "تناظر" },
         { q: "ماء : حياة", opts: ["نوم : راحة", "أكل : شبع", "هواء : تنفس", "نار : حرق"], ans: "نوم : راحة", tip: "العلاقة (احتياج ونتيجة)؛ الماء ضروري للحياة، والنوم ضروري للراحة والاستقرار.", cat: "تناظر" },
@@ -152,7 +154,6 @@
     ];
 
     let currentQ = 0, scoreCount = 0, timerObj, mixedData = [], sName = "", logsList = [];
-    
     function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
 
     function startQuiz() {
@@ -199,9 +200,8 @@
             else if(b.innerText === sel) b.classList.add('wrong');
         });
         if(isOk) scoreCount++;
-        const p = document.getElementById('feedback-panel');
-        p.style.display = 'block';
-        document.getElementById('fb-title').innerText = isOk ? "رائع! إجابة دقيقة ✅" : "للأسف، إجابة خاطئة ❌";
+        document.getElementById('feedback-panel').style.display = 'block';
+        document.getElementById('fb-title').innerText = isOk ? "رائع! ✅" : "خاطئة ❌";
         document.getElementById('fb-desc').innerText = item.tip;
         document.getElementById('next-btn').classList.remove('hidden');
         logsList.push({ q: item.q, cat: item.cat, state: isOk?'ok':'no', correct: item.ans, tip: item.tip });
@@ -213,14 +213,12 @@
         d.innerText = t;
         d.classList.remove('timer-critical');
         timerObj = setInterval(() => {
-            t--;
-            d.innerText = t;
+            t--; d.innerText = t;
             if(t <= 10) d.classList.add('timer-critical');
-            if(t <= 0) { clearInterval(timerObj); checkResult("تخطى الوقت", null); }
+            if(t <= 0) { clearInterval(timerObj); checkResult("انتهى الوقت", null); }
         }, 1000);
     }
 
     function handleNext() { currentQ++; loadQuestion(); }
 
-    async function endQuiz() {
-       
+    function 
