@@ -2,89 +2,87 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>بوابة الاختبار - أ/ عبدالعزيز الفيفي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النموذج (5) المطور - أ/ عبدالعزيز الفيفي</title>
     <style>
-        body { font-family: sans-serif; background: #f5f5f5; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; padding: 30px; border-radius: 20px; width: 100%; max-width: 800px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        :root { --primary: #212121; --secondary: #b19410; --accent: #ffc107; --bg: #f5f5f5; --white: #ffffff; --correct: #1b5e20; --wrong: #b71c1c; --feedback-bg: #fffde7; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; color: #333; overflow-x: hidden; }
+        .quiz-card { background: var(--white); width: 100%; max-width: 1000px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border-top: 15px solid var(--secondary); padding: 35px; position: relative; }
+        .header { text-align: center; border-bottom: 3px double var(--secondary); margin-bottom: 25px; padding-bottom: 20px; }
+        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fafafa; padding: 15px; border-radius: 12px; border: 1px solid #ddd; }
+        .q-badge { background: var(--primary); color: var(--accent); padding: 8px 25px; border-radius: 50px; font-weight: bold; border: 1px solid var(--secondary); }
+        .timer-circle { font-weight: 900; font-size: 1.4rem; color: var(--primary); width: 65px; height: 65px; border: 4px solid var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .passage-box { background: #fffde7; padding: 25px; border-radius: 15px; border-right: 10px solid var(--secondary); margin-bottom: 25px; line-height: 2; font-size: 1.2rem; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
+        .opt-btn { padding: 22px; border: 2px solid #eee; border-radius: 15px; cursor: pointer; transition: 0.3s; font-weight: 600; background: #fff; text-align: center; font-size: 1.1rem; }
+        .opt-btn:hover { border-color: var(--secondary); background: #fffcf0; }
+        .correct { background: var(--correct) !important; color: white; border-color: var(--correct) !important; }
+        .wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong) !important; }
+        .btn-main { background: var(--primary); color: var(--accent); padding: 18px 60px; border: 2px solid var(--secondary); border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold; }
         .hidden { display: none !important; }
-        input { padding: 15px; width: 80%; margin: 20px 0; border: 2px solid #ddd; border-radius: 10px; text-align: center; font-size: 1.2rem; }
-        button { padding: 15px 30px; background: #673ab7; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-<div class="card" id="start-screen">
-    <h1>اختبار التناظر اللفظي</h1>
-    <input type="text" id="userNameInput" placeholder="أدخل اسمك الكريم...">
-    <br>
-    <button onclick="startQuiz()">ابدأ الاختبار</button>
+<div class="quiz-card" id="quiz-container">
+    <div class="header">
+        <h3 id="owner-tag" style="margin:0; color:var(--secondary);">أ / عبدالعزيز الفيفي - ثانوية الأمير عبدالمجيد</h3>
+        <h2 style="margin:10px 0;">نموذج (5) المطور</h2>
+    </div>
+
+    <div id="start-screen" style="text-align: center;">
+        <p>مرحباً بك. ركز في الشروحات لتكتسب مهارة استبعاد الخيارات.</p>
+        <input type="text" id="userNameInput" placeholder="اكتب اسمك الثلاثي..." style="width: 80%; padding: 20px; border-radius: 12px; border: 2px solid var(--secondary); text-align: center; font-size: 1.3rem; margin-bottom: 30px;">
+        <br><button class="btn-main" onclick="startQuiz()">ابدأ الاختبار 🚀</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="status-bar">
+            <div>👤 الطالب: <span id="display-name" style="font-weight: bold; color: var(--secondary);"></span></div>
+            <div class="q-badge" id="display-q-idx"></div>
+        </div>
+        <div id="display-text" class="passage-box hidden"></div>
+        <div id="display-question" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; text-align: center;"></div>
+        <div id="display-options" class="options-grid"></div>
+    </div>
 </div>
-
-<div class="card hidden" id="quiz-screen">
-    <h2 id="questionText">جاري تحميل الاختبار...</h2>
-    <div id="optionsContainer"></div>
-</div>
-
-<div class="card hidden" id="result-screen">
-    <h2>انتهى الاختبار</h2>
-    <p id="scoreDisplay"></p>
-    <button onclick="location.reload()">إعادة الاختبار</button>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBkCO7FDQXd09YDf843J4_AtvEFvzzt-R0",
-        authDomain: "aztlg-494c3.firebaseapp.com",
-        projectId: "aztlg-494c3",
-        storageBucket: "aztlg-494c3.firebasestorage.app",
-        messagingSenderId: "597051893949",
-        appId: "1:597051893949:web:de5554ac900317a92b2fd4",
-        measurementId: "G-YKJ1PTP9TH"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // دالة إرسال النتيجة (تستدعى عند انتهاء الطالب)
-    window.sendResult = async (name, score) => {
-        try {
-            await addDoc(collection(db, "student_results"), {
-                name: name,
-                score: score,
-                quizId: "النموذج الشامل 1",
-                date: new Date().toLocaleString('ar-SA')
-            });
-            console.log("تم الإرسال بنجاح");
-        } catch (e) { console.error("Error: ", e); }
-    };
-</script>
 
 <script>
-    let sName = "";
-    let scoreCount = 40; // استبدلها بقيمة الدرجة الحقيقية لديك
+    // البيانات الخاصة بك
+    const rawData = [
+        { q: "ريش : طائر", opts: ["شعر : ثدييات", "جلد : إنسان", "وبر : إبل", "صوف : غنم"], ans: "شعر : ثدييات", cat: "تناظر" },
+        { q: "ماء : حياة", opts: ["نوم : راحة", "أكل : شبع", "هواء : تنفس", "نار : حرق"], ans: "نوم : راحة", cat: "تناظر" }
+        // ... (أضف بقية أسئلتك هنا بنفس التنسيق)
+    ];
 
-    // دالة البدء (مفعلة عالمياً)
-    window.startQuiz = function() {
-        const nameInput = document.getElementById('userNameInput').value;
-        if (!nameInput.trim()) return alert("الرجاء كتابة الاسم أولاً!");
-        sName = nameInput;
+    let currentQ = 0, scoreCount = 0, sName = "";
+
+    function startQuiz() {
+        sName = document.getElementById('userNameInput').value;
+        if(!sName.trim()) return alert("لطفاً، أدخل اسمك.");
+        document.getElementById('display-name').innerText = sName;
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
-    };
+        loadQuestion();
+    }
 
-    // دالة نهاية الاختبار (استدعها عند انتهاء الطالب)
-    function endQuiz() {
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('scoreDisplay').innerText = `حصلت على ${scoreCount} درجة`;
-        
-        // إرسال البيانات فوراً
-        if (window.sendResult) {
-            window.sendResult(sName, scoreCount);
-        }
+    function loadQuestion() {
+        if(currentQ >= rawData.length) return alert("انتهى الاختبار! نتيجتك: " + scoreCount);
+        const item = rawData[currentQ];
+        document.getElementById('display-question').innerText = item.q;
+        const optBox = document.getElementById('display-options');
+        optBox.innerHTML = '';
+        item.opts.forEach(o => {
+            const b = document.createElement('div');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => {
+                if(o === item.ans) scoreCount++;
+                currentQ++;
+                loadQuestion();
+            };
+            optBox.appendChild(b);
+        });
     }
 </script>
 </body>
