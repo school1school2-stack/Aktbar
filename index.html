@@ -2,86 +2,33 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النموذج (5) المطور - أ/ عبدالعزيز الفيفي</title>
+    <title>بوابة الاختبار - أ/ عبدالعزيز الفيفي</title>
     <style>
-        :root { --primary: #212121; --secondary: #b19410; --accent: #ffc107; --bg: #f5f5f5; --white: #ffffff; --correct: #1b5e20; --wrong: #b71c1c; --feedback-bg: #fffde7; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; color: #333; overflow-x: hidden; }
-        #safety-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: gold; z-index: 1000000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-size: 2rem; }
-        .quiz-card { background: var(--white); width: 100%; max-width: 1000px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border-top: 15px solid var(--secondary); padding: 35px; position: relative; }
-        .header { text-align: center; border-bottom: 3px double var(--secondary); margin-bottom: 25px; padding-bottom: 20px; }
-        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fafafa; padding: 15px; border-radius: 12px; border: 1px solid #ddd; }
-        .q-badge { background: var(--primary); color: var(--accent); padding: 8px 25px; border-radius: 50px; font-weight: bold; border: 1px solid var(--secondary); }
-        .timer-circle { font-weight: 900; font-size: 1.4rem; color: var(--primary); width: 65px; height: 65px; border: 4px solid var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .timer-critical { color: white; background: var(--wrong); border-color: #000; animation: shake 0.5s infinite; }
-        @keyframes shake { 0% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
-        .passage-box { background: #fffde7; padding: 25px; border-radius: 15px; border-right: 10px solid var(--secondary); margin-bottom: 25px; line-height: 2; font-size: 1.2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
-        .opt-btn { padding: 22px; border: 2px solid #eee; border-radius: 15px; cursor: pointer; transition: 0.3s; font-weight: 600; background: #fff; text-align: center; font-size: 1.1rem; }
-        .opt-btn:hover { border-color: var(--secondary); background: #fffcf0; transform: translateY(-3px); }
-        .correct { background: var(--correct) !important; color: white; border-color: var(--correct) !important; }
-        .wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong) !important; }
-        .feedback-panel { margin-top: 20px; padding: 25px; border-radius: 15px; display: none; background: var(--feedback-bg); border-right: 10px solid var(--correct); animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .btn-main { background: var(--primary); color: var(--accent); padding: 18px 60px; border: 2px solid var(--secondary); border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: 0.3s; }
-        .btn-main:hover { background: #333; }
+        body { font-family: sans-serif; background: #f5f5f5; padding: 20px; display: flex; justify-content: center; }
+        .card { background: white; padding: 30px; border-radius: 20px; width: 100%; max-width: 800px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
         .hidden { display: none !important; }
-        .log-item { padding: 20px; margin-bottom: 15px; border-radius: 15px; border-right: 15px solid; background: #fff; border: 1px solid #eee; position: relative; }
-        .log-ok { border-right-color: var(--correct); }
-        .log-no { border-right-color: var(--wrong); }
-        .watermark { position: absolute; bottom: 5px; left: 10px; font-size: 10px; color: rgba(0,0,0,0.2); font-weight: bold; }
-        @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
+        input { padding: 15px; width: 80%; margin: 20px 0; border: 2px solid #ddd; border-radius: 10px; text-align: center; font-size: 1.2rem; }
+        button { padding: 15px 30px; background: #673ab7; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-<div id="safety-overlay">
-    <h1>⚠️ نظام حماية المحتوى</h1>
-    <p>حقوق هذا العمل محفوظة للأستاذ: عبدالعزيز الفيفي. لا يسمح بإعادة النشر أو التعديل.</p>
+<div class="card" id="start-screen">
+    <h1>اختبار التناظر اللفظي</h1>
+    <input type="text" id="userNameInput" placeholder="أدخل اسمك الكريم...">
+    <br>
+    <button onclick="startQuiz()">ابدأ الاختبار</button>
 </div>
 
-<div class="quiz-card" id="quiz-container">
-    <div class="header">
-        <h3 id="owner-tag" style="margin:0; color:var(--secondary);">أ / عبدالعزيز الفيفي - ثانوية الأمير عبدالمجيد</h3>
-        <h2 style="margin:10px 0;">نموذج (5) المطور - المراجعة النهائية الشاملة</h2>
-    </div>
+<div class="card hidden" id="quiz-screen">
+    <h2 id="questionText">جاري تحميل الاختبار...</h2>
+    <div id="optionsContainer"></div>
+</div>
 
-    <div id="start-screen" style="text-align: center;">
-        <p style="font-size: 1.3rem; color: #444;">مرحباً بك في النموذج الأخير. ركز في الشروحات لتكتسب مهارة استبعاد الخيارات.</p>
-        <input type="text" id="userNameInput" placeholder="اكتب اسمك الثلاثي..." style="width: 80%; padding: 20px; border-radius: 12px; border: 2px solid var(--secondary); text-align: center; font-size: 1.3rem; margin-bottom: 30px; outline: none;">
-        <br><button class="btn-main" onclick="startQuiz()">ابدأ الاختبار الختامي 🚀</button>
-    </div>
-
-    <div id="quiz-screen" class="hidden">
-        <div class="status-bar">
-            <div>👤 الطالب: <span id="display-name" style="font-weight: bold; color: var(--secondary);"></span></div>
-            <div class="q-badge" id="display-q-idx"></div>
-            <div id="display-timer" class="timer-circle">45</div>
-        </div>
-        <div id="display-text" class="passage-box hidden"></div>
-        <div id="display-question" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; text-align: center;"></div>
-        <div id="display-options" class="options-grid"></div>
-        <div id="feedback-panel" class="feedback-panel">
-            <b id="fb-title" style="font-size: 1.2rem; display: block; margin-bottom: 10px; color: var(--correct);"></b>
-            <div id="fb-desc" style="line-height: 1.8; color: #333;"></div>
-        </div>
-        <div style="text-align: center; margin-top: 35px;">
-            <button id="next-btn" class="btn-main hidden" onclick="handleNext()">السؤال التالي ⮕</button>
-        </div>
-    </div>
-
-    <div id="result-screen" class="hidden">
-        <div style="text-align: center; background: linear-gradient(135deg, var(--primary), #444); color: var(--accent); padding: 50px; border-radius: 20px; margin-bottom: 40px; border: 3px solid var(--secondary);">
-            <h1 id="res-score" style="margin: 0; font-size: 4.5rem;"></h1>
-            <p id="res-msg" style="font-size: 1.5rem; margin-top: 15px; color: #fff;"></p>
-            <p style="color: var(--secondary); font-weight: bold;">أ / عبدالعزيز الفيفي</p>
-        </div>
-        <h3>📚 أرشيف التغذية الراجعة (للمراجعة):</h3>
-        <div id="res-logs"></div>
-        <div style="text-align: center; margin-top: 30px;">
-            <button class="btn-main" onclick="location.reload()">إعادة النموذج 🔄</button>
-        </div>
-    </div>
+<div class="card hidden" id="result-screen">
+    <h2>انتهى الاختبار</h2>
+    <p id="scoreDisplay"></p>
+    <button onclick="location.reload()">إعادة الاختبار</button>
 </div>
 
 <script type="module">
@@ -101,33 +48,43 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.sendResultToCloud = async (studentName, score, quizId) => {
+    // دالة إرسال النتيجة (تستدعى عند انتهاء الطالب)
+    window.sendResult = async (name, score) => {
         try {
             await addDoc(collection(db, "student_results"), {
-                name: studentName,
+                name: name,
                 score: score,
-                quizId: quizId,
+                quizId: "النموذج الشامل 1",
                 date: new Date().toLocaleString('ar-SA')
             });
-        } catch (e) { console.error("Error:", e); }
+            console.log("تم الإرسال بنجاح");
+        } catch (e) { console.error("Error: ", e); }
     };
 </script>
 
 <script>
-    // متغيرات الاختبار الأصلية
-    let currentQ = 0, scoreCount = 0, sName = "", logsList = [];
-    
-    // [ملاحظة: منطق الاختبار الخاص بك موجود هنا، تأكد من استدعاء sendResultToCloud في نهاية الاختبار]
+    let sName = "";
+    let scoreCount = 40; // استبدلها بقيمة الدرجة الحقيقية لديك
+
+    // دالة البدء (مفعلة عالمياً)
+    window.startQuiz = function() {
+        const nameInput = document.getElementById('userNameInput').value;
+        if (!nameInput.trim()) return alert("الرجاء كتابة الاسم أولاً!");
+        sName = nameInput;
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+    };
+
+    // دالة نهاية الاختبار (استدعها عند انتهاء الطالب)
     function endQuiz() {
-        // ... (كودك الأصلي لإظهار شاشة النتيجة) ...
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('scoreDisplay').innerText = `حصلت على ${scoreCount} درجة`;
         
-        // إرسال النتيجة للسحابة (الربط التلقائي)
-        if (window.sendResultToCloud) {
-            window.sendResultToCloud(sName, scoreCount, "النموذج الشامل 1"); 
+        // إرسال البيانات فوراً
+        if (window.sendResult) {
+            window.sendResult(sName, scoreCount);
         }
-        // ... (بقية كود عرض النتيجة) ...
     }
 </script>
 </body>
