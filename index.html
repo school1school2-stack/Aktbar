@@ -37,7 +37,7 @@
 
 <div id="safety-overlay">
     <h1>⚠️ نظام حماية المحتوى</h1>
-    <p>حقوق هذا العمل محفوظة للأستاذ: عبدالعزيز الفيفي.</p>
+    <p>حقوق هذا العمل محفوظة للأستاذ: عبدالعزيز الفيفي. لا يسمح بإعادة النشر أو التعديل.</p>
 </div>
 
 <div class="quiz-card" id="quiz-container">
@@ -109,24 +109,26 @@
                 quizId: quizId,
                 date: new Date().toLocaleString('ar-SA')
             });
-            console.log("تم الإرسال!");
-        } catch (e) { console.error("خطأ:", e); }
+        } catch (e) { console.error("Error:", e); }
     };
 </script>
+
 <script>
-    // [ملاحظة: تأكد من بقاء منطق الاختبار الأصلي لديك هنا]
-    // ...
-    // داخل دالة endQuiz أضف السطر التالي:
+    // متغيرات الاختبار الأصلية
+    let currentQ = 0, scoreCount = 0, sName = "", logsList = [];
+    
+    // [ملاحظة: منطق الاختبار الخاص بك موجود هنا، تأكد من استدعاء sendResultToCloud في نهاية الاختبار]
     function endQuiz() {
-        // ... (كودك الأصلي لإخفاء الشاشات) ...
+        // ... (كودك الأصلي لإظهار شاشة النتيجة) ...
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
         
-        // ربط السحابة:
+        // إرسال النتيجة للسحابة (الربط التلقائي)
         if (window.sendResultToCloud) {
-            window.sendResultToCloud(sName, scoreCount, "النموذج 5");
+            window.sendResultToCloud(sName, scoreCount, "النموذج الشامل 1"); 
         }
-        // ... (كودك الأصلي لعرض النتائج) ...
+        // ... (بقية كود عرض النتيجة) ...
     }
-    // ... [باقي سكربت الاختبار الأصلي] ...
 </script>
 </body>
 </html>
