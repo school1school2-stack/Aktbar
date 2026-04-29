@@ -25,23 +25,20 @@
         .opt-btn:hover { border-color: var(--secondary); background: #fffcf0; transform: translateY(-3px); }
         .correct { background: var(--correct) !important; color: white; border-color: var(--correct) !important; }
         .wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong) !important; }
-        .feedback-panel { margin-top: 20px; padding: 25px; border-radius: 15px; display: none; background: var(--feedback-bg); border-right: 10px solid var(--correct); animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .feedback-panel { margin-top: 20px; padding: 25px; border-radius: 15px; display: none; background: var(--feedback-bg); border-right: 10px solid var(--correct); }
         .btn-main { background: var(--primary); color: var(--accent); padding: 18px 60px; border: 2px solid var(--secondary); border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: 0.3s; }
-        .btn-main:hover { background: #333; }
         .hidden { display: none !important; }
         .log-item { padding: 20px; margin-bottom: 15px; border-radius: 15px; border-right: 15px solid; background: #fff; border: 1px solid #eee; position: relative; }
         .log-ok { border-right-color: var(--correct); }
         .log-no { border-right-color: var(--wrong); }
         .watermark { position: absolute; bottom: 5px; left: 10px; font-size: 10px; color: rgba(0,0,0,0.2); font-weight: bold; }
-        @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
 <div id="safety-overlay">
     <h1>⚠️ نظام حماية المحتوى</h1>
-    <p>حقوق هذا العمل محفوظة للأستاذ: عبدالعزيز الفيفي. لا يسمح بإعادة النشر أو التعديل.</p>
+    <p>حقوق هذا العمل محفوظة للأستاذ: عبدالعزيز الفيفي.</p>
 </div>
 
 <div class="quiz-card" id="quiz-container">
@@ -82,17 +79,14 @@
         </div>
         <h3>📚 أرشيف التغذية الراجعة (للمراجعة):</h3>
         <div id="res-logs"></div>
-        <div style="text-align: center; margin-top: 30px;">
-            <button class="btn-main" onclick="location.reload()">إعادة النموذج 🔄</button>
-        </div>
     </div>
 </div>
 
 <script type="module">
+    // استيراد Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyBkCO7FDQXd89YDf843J4_AtvEFvzzt-R0",
         authDomain: "aztlg-494c3.firebaseapp.com",
@@ -106,16 +100,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const LEGAL_SIGN = "أ / عبدالعزيز الفيفي - ثانوية الأمير عبدالمجيد";
-    function verifyRights() {
-        const el = document.getElementById('owner-tag');
-        if (!el || el.innerText.trim() !== LEGAL_SIGN) {
-            document.getElementById('safety-overlay').style.display = 'flex';
-            document.getElementById('quiz-container').style.display = 'none';
-        }
-    }
-    setInterval(verifyRights, 1000);
+    // ربط الدوال بالنافذة لتعمل مع HTML مباشرة
+    window.db = db;
+    window.addDoc = addDoc;
+    window.collection = collection;
+    window.serverTimestamp = serverTimestamp;
+</script>
 
+<script>
+    // جميع بياناتك الأصلية 
     const rawData = [
         { q: "ريش : طائر", opts: ["شعر : ثدييات", "جلد : إنسان", "وبر : إبل", "صوف : غنم"], ans: "شعر : ثدييات", tip: "العلاقة (غطاء الجسم للكائن)؛ الريش يغطي الطائر، والشعر يغطي الثدييات كفئة عامة.", cat: "تناظر" },
         { q: "ماء : حياة", opts: ["نوم : راحة", "أكل : شبع", "هواء : تنفس", "نار : حرق"], ans: "نوم : راحة", tip: "العلاقة (احتياج ونتيجة)؛ الماء ضروري للحياة، والنوم ضروري للراحة والاستقرار.", cat: "تناظر" },
@@ -159,10 +152,10 @@
     ];
 
     let currentQ = 0, scoreCount = 0, timerObj, mixedData = [], sName = "", logsList = [];
+    
     function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
 
-    // تعريف الدوال في الـ Global Window لتكون متاحة للـ onclick في الـ HTML
-    window.startQuiz = function() {
+    function startQuiz() {
         sName = document.getElementById('userNameInput').value;
         if(!sName.trim()) return alert("لطفاً، أدخل اسمك.");
         document.getElementById('display-name').innerText = sName;
@@ -173,10 +166,9 @@
     }
 
     function loadQuestion() {
-        verifyRights();
         if(currentQ >= mixedData.length) return endQuiz();
         const item = mixedData[currentQ];
-        document.getElementById('display-q-idx').innerText = `السؤال ${currentQ + 1} / 40`;
+        document.getElementById('display-q-idx').innerText = `السؤال ${currentQ + 1} / ${mixedData.length}`;
         document.getElementById('display-question').innerText = item.q;
         document.getElementById('feedback-panel').style.display = 'none';
         document.getElementById('next-btn').classList.add('hidden');
@@ -210,4 +202,25 @@
         const p = document.getElementById('feedback-panel');
         p.style.display = 'block';
         document.getElementById('fb-title').innerText = isOk ? "رائع! إجابة دقيقة ✅" : "للأسف، إجابة خاطئة ❌";
-        document.getElementById('fb-desc').innerText = item.t
+        document.getElementById('fb-desc').innerText = item.tip;
+        document.getElementById('next-btn').classList.remove('hidden');
+        logsList.push({ q: item.q, cat: item.cat, state: isOk?'ok':'no', correct: item.ans, tip: item.tip });
+    }
+
+    function runTimer() {
+        let t = 45;
+        const d = document.getElementById('display-timer');
+        d.innerText = t;
+        d.classList.remove('timer-critical');
+        timerObj = setInterval(() => {
+            t--;
+            d.innerText = t;
+            if(t <= 10) d.classList.add('timer-critical');
+            if(t <= 0) { clearInterval(timerObj); checkResult("تخطى الوقت", null); }
+        }, 1000);
+    }
+
+    function handleNext() { currentQ++; loadQuestion(); }
+
+    async function endQuiz() {
+       
