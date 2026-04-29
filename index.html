@@ -3,264 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النموذج (5) المطور - أ/ عبدالعزيز الفيفي</title>
+    <title>اختبار القدرات اللفظي التجريبي</title>
     <style>
-        :root { 
-            --primary: #212121;
-            --secondary: #b19410; --accent: #ffc107; 
-            --bg: #f5f5f5; --white: #ffffff; --correct: #1b5e20; --wrong: #b71c1c;
-            --feedback-bg: #fffde7;
-        }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; color: #333; overflow-x: hidden; }
-        #safety-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: gold; z-index: 1000000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-size: 2rem; }
-        .quiz-card { background: var(--white); width: 100%; max-width: 1000px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border-top: 15px solid var(--secondary); padding: 35px; position: relative; }
-        .header { text-align: center; border-bottom: 3px double var(--secondary); margin-bottom: 25px; padding-bottom: 20px; }
-        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fafafa; padding: 15px; border-radius: 12px; border: 1px solid #ddd; }
-        .q-badge { background: var(--primary); color: var(--accent); padding: 8px 25px; border-radius: 50px; font-weight: bold; border: 1px solid var(--secondary); }
-        .timer-circle { font-weight: 900; font-size: 1.4rem; color: var(--primary); width: 65px; height: 65px; border: 4px solid var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .timer-critical { color: white; background: var(--wrong); border-color: #000; animation: shake 0.5s infinite; }
-        @keyframes shake { 0% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
-        .passage-box { background: #fffde7; padding: 25px; border-radius: 15px; border-right: 10px solid var(--secondary); margin-bottom: 25px; line-height: 2; font-size: 1.2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
-        .opt-btn { padding: 22px; border: 2px solid #eee; border-radius: 15px; cursor: pointer; transition: 0.3s; font-weight: 600; background: #fff; text-align: center; font-size: 1.1rem; }
-        .opt-btn:hover { border-color: var(--secondary); background: #fffcf0; transform: translateY(-3px); }
-        .correct { background: var(--correct) !important; color: white; border-color: var(--correct) !important; }
-        .wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong) !important; }
-        .feedback-panel { margin-top: 20px; padding: 25px; border-radius: 15px; display: none; background: var(--feedback-bg); border-right: 10px solid var(--correct); animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .btn-main { background: var(--primary); color: var(--accent); padding: 18px 60px; border: 2px solid var(--secondary); border-radius: 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: 0.3s; margin: 10px; }
-        .btn-main:hover { background: #333; }
-        .hidden { display: none !important; }
-        .log-item { padding: 20px; margin-bottom: 15px; border-radius: 15px; border-right: 15px solid; background: #fff; border: 1px solid #eee; position: relative; }
-        .log-ok { border-right-color: var(--correct); }
-        .log-no { border-right-color: var(--wrong); }
-        .watermark { position: absolute; bottom: 5px; left: 10px; font-size: 10px; color: rgba(0,0,0,0.2); font-weight: bold; }
-        @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
-        
-        /* تنسيق إضافي لزر الإرسال */
-        .btn-send { background: var(--correct); color: white; border: none; }
-        .btn-send:disabled { background: #ccc; cursor: not-allowed; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --danger: #e74c3c; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .timer { font-size: 24px; color: var(--danger); font-weight: bold; text-align: center; margin: 10px 0; }
+        .question-card { display: none; }
+        .active { display: block; }
+        .option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: right; background: none; font-size: 16px; }
+        .option:hover { background: #f0f7ff; border-color: var(--secondary); }
+        .btn { background: var(--secondary); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%; }
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .result-table th, .result-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .correct { color: var(--success); font-weight: bold; }
+        .wrong { color: var(--danger); font-weight: bold; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-<div id="safety-overlay">
-    <h1>⚠️ نظام حماية المحتوى</h1>
-    [span_0](start_span)<p>حقوق هذا العمل محفوظة للأستاذ: عبدالعزيز الفيفي.[span_0](end_span) لا يسمح بإعادة النشر أو التعديل.</p>
-</div>
-
-<div class="quiz-card" id="quiz-container">
-    <div class="header">
-        <h3 id="owner-tag" style="margin:0; color:var(--secondary);">أ / عبدالعزيز الفيفي - ثانوية الأمير عبدالمجيد</h3>
-        <h2 style="margin:10px 0;">نموذج (5) المطور - المراجعة النهائية الشاملة </h2>
+<div class="container">
+    <div id="start-screen">
+        <div class="header"><h1>اختبار القدرات اللفظي (48 سؤال)</h1></div>
+        <div class="input-group">
+            <label>اسم الطالب:</label>
+            <input type="text" id="studentName" placeholder="أدخل اسمك الثلاثي">
+        </div>
+        <div class="input-group">
+            <label>الفصل:</label>
+            <input type="text" id="studentClass" placeholder="أدخل فصلك (مثلاً: 1/3)">
+        </div>
+        <button class="btn" onclick="startQuiz()">ابدأ الاختبار الآن</button>
     </div>
 
-    <div id="start-screen" style="text-align: center;">
-        [span_1](start_span)<p style="font-size: 1.3rem; color: #444;">مرحباً بك في النموذج الأخير.[span_1](end_span) ركز في الشروحات لتكتسب مهارة استبعاد الخيارات.</p>
-        <input type="text" id="userNameInput" placeholder="اكتب اسمك الثلاثي..." style="width: 80%; padding: 20px; border-radius: 12px; border: 2px solid var(--secondary); text-align: center; font-size: 1.3rem; margin-bottom: 30px; outline: none;">
-        <br><button class="btn-main" onclick="startQuiz()">ابدأ الاختبار الختامي 🚀</button>
+    <div id="quiz-screen" style="display:none;">
+        <div class="timer">الوقت المتبقي: <span id="time-left">60</span> ثانية</div>
+        <div id="question-container"></div>
     </div>
 
-    <div id="quiz-screen" class="hidden">
-        <div class="status-bar">
-            <div>👤 الطالب: <span id="display-name" style="font-weight: bold; color: var(--secondary);"></span></div>
-            <div class="q-badge" id="display-q-idx"></div>
-            <div id="display-timer" class="timer-circle">45</div>
-        </div>
-        
-        <div id="display-text" class="passage-box hidden"></div>
-        <div id="display-question" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; text-align: center;"></div>
-        <div id="display-options" class="options-grid"></div>
-        
-        <div id="feedback-panel" class="feedback-panel">
-            <b id="fb-title" style="font-size: 1.2rem; display: block; margin-bottom: 10px; color: var(--correct);"></b>
-            <div id="fb-desc" style="line-height: 1.8; color: #333;"></div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 35px;">
-            <button id="next-btn" class="btn-main hidden" onclick="handleNext()">السؤال التالي ⮕</button>
-        </div>
-    </div>
-
-    <div id="result-screen" class="hidden">
-        <div style="text-align: center; background: linear-gradient(135deg, var(--primary), #444); color: var(--accent); padding: 50px; border-radius: 20px; margin-bottom: 40px; border: 3px solid var(--secondary);">
-            <h1 id="res-score" style="margin: 0; font-size: 4.5rem;"></h1>
-            <p id="res-msg" style="font-size: 1.5rem; margin-top: 15px; color: #fff;"></p>
-            <p style="color: var(--secondary); font-weight: bold;">أ / عبدالعزيز الفيفي</p>
-            
-            <div id="action-buttons" style="margin-top: 20px;">
-                <button id="send-data-btn" class="btn-main btn-send" onclick="sendToFirebase()">إرسال النتيجة للأستاذ 📤</button>
-            </div>
-        </div>
-        <h3>📚 أرشيف التغذية الراجعة (للمراجعة):</h3>
-        <div id="res-logs"></div>
-        <div style="text-align: center; margin-top: 30px;">
-            <button class="btn-main" onclick="location.reload()">إعادة النموذج 🔄</button>
-        </div>
+    <div id="result-screen" style="display:none;">
+        <div class="header"><h2>نتيجتك النهائية</h2></div>
+        <p id="student-info-display"></p>
+        <div id="score-summary" style="font-size: 20px; text-align: center; margin: 20px;"></div>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>السؤال</th>
+                    <th>إجابتك</th>
+                    <th>الصحيحة</th>
+                </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+        </table>
+        <br>
+        <button class="btn" onclick="location.reload()">إعادة الاختبار</button>
     </div>
 </div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // إعدادات Firebase من الصور الخاصة بك
-    const firebaseConfig = {
-        apiKey: "AIzaSyBkC07FDQXd89YDf843J4_AtvEFvzzt-R0",
-        authDomain: "aztig-494c3.firebaseapp.com",
-        projectId: "aztig-494c3",
-        storageBucket: "aztig-494c3.firebasestorage.app",
-        messagingSenderId: "597051893949",
-        appId: "1:597051893949:web:de5554ac900317a92b2fd4",
-        measurementId: "G-YKJ1PTP9TH"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // جعل الدالة متاحة عالمياً للزر
-    window.sendToFirebase = async function() {
-        const btn = document.getElementById('send-data-btn');
-        btn.disabled = true;
-        btn.innerText = "جاري الإرسال... ⏳";
-
-        try {
-            await addDoc(collection(db, "student_results"), {
-                studentName: window.sName,
-                score: window.scoreCount,
-                totalQuestions: 40,
-                examModel: "النموذج (5) المطور",
-                timestamp: serverTimestamp(),
-                [span_2](start_span)detailedLogs: window.logsList // يحتوي على كل سؤال وإجابة الطالب وحالة الإجابة[span_2](end_span)
-            });
-            alert("تم إرسال نتيجتك بنجاح يا " + window.sName);
-            btn.innerText = "تم الإرسال بنجاح ✅";
-            btn.style.background = "#4caf50";
-        } catch (e) {
-            console.error("Error adding document: ", e);
-            alert("عذراً، حدث خطأ أثناء الإرسال. تأكد من اتصالك بالإنترنت.");
-            btn.disabled = false;
-            btn.innerText = "إرسال النتيجة للأستاذ 📤";
-        }
-    };
-</script>
 
 <script>
-    [span_3](start_span)// تم الإبقاء على منطق الاختبار الأصلي والبيانات [cite: 147-173]
-    const LEGAL_SIGN = "أ / عبدالعزيز الفيفي - ثانوية الأمير عبدالمجيد";
-    function verifyRights() {
-        const el = document.getElementById('owner-tag');
-        if (!el || el.innerText.trim() !== LEGAL_SIGN) {
-            document.getElementById('safety-overlay').style.display = 'flex';
-            document.getElementById('quiz-container').style.display = 'none';
-        }
-    }
-    setInterval(verifyRights, 1000);
-
-    const rawData = [
-        { q: "ريش : طائر", opts: ["شعر : ثدييات", "جلد : إنسان", "وبر : إبل", "صوف : غنم"], ans: "شعر : ثدييات", tip: "العلاقة (غطاء الجسم للكائن)؛ الريش يغطي الطائر، والشعر يغطي الثدييات كفئة عامة.", cat: "تناظر" },
-        // ... (بقية الأسئلة 149-173 تبقى كما هي في ملفك الأصلي)
-        { q: "الارتباط: 'فصل : مدرسة' مثل 'غرفة : ........'", opts: ["فندق", "شارع", "حديقة", "مطعم"], ans: "فندق", tip: "علاقة جزء من كل؛ الغرفة جزء من الفندق.", cat: "ارتباط" }
-    ];
-
-    // جعل المتغيرات عالمية لتصل إليها دالة Firebase
-    window.currentQ = 0; window.scoreCount = 0; window.logsList = []; window.sName = "";
-    let timerObj, mixedData = [];
+    // نموذج لـ 48 سؤال (يمكنك تغيير النصوص لاحقاً)
+    const questions = [];
+    const categories = ["تناظر لفظي", "إكمال جمل", "خطأ سياقي", "استيعاب مقروء"];
     
-    function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+    // إنشاء بيانات تجريبية (48 سؤال)
+    for(let i=1; i<=48; i++) {
+        questions.push({
+            id: i,
+            category: categories[Math.floor(Math.random() * categories.length)],
+            text: `سؤال رقم ${i}: ما هي العلاقة المشابهة لـ (رئة : تنفس)؟`,
+            options: ["قلب : ضخ", "عين : عمى", "أذن : صمم", "رأس : شعر"],
+            correct: 0
+        });
+    }
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 60;
+    let userAnswers = [];
 
     function startQuiz() {
-        window.sName = document.getElementById('userNameInput').value;
-        if(!window.sName.trim()) return alert("لطفاً، أدخل اسمك.");
-        document.getElementById('display-name').innerText = window.sName;
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
-        mixedData = shuffle([...rawData]);
-        loadQuestion();
+        const name = document.getElementById('studentName').value;
+        const sClass = document.getElementById('studentClass').value;
+        if(!name || !sClass) return alert("يرجى إدخال الاسم والفصل");
+
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        showQuestion();
     }
 
-    function loadQuestion() {
-        verifyRights();
-        if(window.currentQ >= mixedData.length) return endQuiz();
-        const item = mixedData[window.currentQ];
-        document.getElementById('display-q-idx').innerText = `السؤال ${window.currentQ + 1} / 40`;
-        document.getElementById('display-question').innerText = item.q;
-        document.getElementById('feedback-panel').style.display = 'none';
-        document.getElementById('next-btn').classList.add('hidden');
+    function showQuestion() {
+        clearInterval(timer);
+        timeLeft = 60;
+        document.getElementById('time-left').innerText = timeLeft;
         
-        const txtBox = document.getElementById('display-text');
-        if(item.text) { txtBox.innerText = item.text; txtBox.classList.remove('hidden'); }
-        else { txtBox.classList.add('hidden'); }
-
-        const optBox = document.getElementById('display-options');
-        optBox.innerHTML = '';
-        shuffle([...item.opts]).forEach(o => {
-            const b = document.createElement('div');
-            b.className = 'opt-btn';
-            b.innerText = o;
-            b.onclick = () => checkResult(o, b);
-            optBox.appendChild(b);
-        });
-        runTimer();
-    }
-
-    function checkResult(sel, el) {
-        clearInterval(timerObj);
-        const item = mixedData[window.currentQ];
-        const isOk = (sel === item.ans);
-        document.querySelectorAll('.opt-btn').forEach(b => {
-            b.onclick = null;
-            if(b.innerText === item.ans) b.classList.add('correct');
-            else if(b.innerText === sel) b.classList.add('wrong');
-        });
-        if(isOk) window.scoreCount++;
-        const p = document.getElementById('feedback-panel');
-        p.style.display = 'block';
-        document.getElementById('fb-title').innerText = isOk ? "رائع! إجابة دقيقة ✅" : "للأسف، إجابة خاطئة ❌";
-        document.getElementById('fb-desc').innerText = item.tip;
-        document.getElementById('next-btn').classList.remove('hidden');
-        
-        [cite_start]// حفظ تفاصيل الإجابة للتحليل اللاحق[span_3](end_span)
-        window.logsList.push({ 
-            q: item.q, 
-            cat: item.cat, 
-            state: isOk ? 'ok' : 'no', 
-            userAns: sel, 
-            correctAns: item.ans, 
-            tip: item.tip 
-        });
-    }
-
-    function runTimer() {
-        let t = 45;
-        const d = document.getElementById('display-timer');
-        d.innerText = t;
-        d.classList.remove('timer-critical');
-        timerObj = setInterval(() => {
-            t--;
-            d.innerText = t;
-            if(t <= 10) d.classList.add('timer-critical');
-            if(t <= 0) { clearInterval(timerObj); checkResult("تخطى الوقت", null); }
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('time-left').innerText = timeLeft;
+            if(timeLeft <= 0) nextQuestion(null);
         }, 1000);
+
+        const q = questions[currentQuestionIndex];
+        let html = `<h3>[${q.category}]</h3><p>${q.text}</p>`;
+        q.options.forEach((opt, index) => {
+            html += `<button class="option" onclick="nextQuestion(${index})">${opt}</button>`;
+        });
+        document.getElementById('question-container').innerHTML = html;
     }
 
-    function handleNext() { window.currentQ++; loadQuestion(); }
-
-    function endQuiz() {
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('res-score').innerText = `${window.scoreCount} / 40`;
-        document.getElementById('res-msg').innerText = `تهانينا يا ${window.sName}! لقد أتممت جميع النماذج بنجاح.`;
-        
-        const box = document.getElementById('res-logs');
-        box.innerHTML = '';
-        window.logsList.forEach((l, i) => {
-            const div = document.createElement('div');
-            div.className = `log-item ${l.state==='ok'?'log-ok':'log-no'}`;
-            div.innerHTML = `<div class="watermark">© أ/ عبدالعزيز الفيفي</div><strong>س${i+1}: [${l.cat}] ${l.q}</strong><br>إجابتك: ${l.userAns}<br>الجواب النموذجي: ${l.correctAns}<br><div style="margin-top:10px; font-size:0.9rem; color:#444; border-top:1px solid #eee; padding-top:8px;">💡 الشرح التعليمي: ${l.tip}</div>`;
-            box.appendChild(div);
+    function nextQuestion(selectedIndex) {
+        userAnswers.push({
+            question: questions[currentQuestionIndex].text,
+            userAns: selectedIndex !== null ? questions[currentQuestionIndex].options[selectedIndex] : "لم يتم الحل",
+            correctAns: questions[currentQuestionIndex].options[questions[currentQuestionIndex].correct],
+            isCorrect: selectedIndex === questions[currentQuestionIndex].correct
         });
+
+        if(selectedIndex === questions[currentQuestionIndex].correct) score++;
+
+        currentQuestionIndex++;
+        if(currentQuestionIndex < questions.length) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        clearInterval(timer);
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        const name = document.getElementById('studentName').value;
+        const sClass = document.getElementById('studentClass').value;
+        document.getElementById('student-info-display').innerText = `الطالب: ${name} | الفصل: ${sClass}`;
+        document.getElementById('score-summary').innerHTML = `حصلت على <b>${score}</b> من أصل <b>${questions.length}</b>`;
+
+        let tableHtml = '';
+        userAnswers.forEach(ans => {
+            tableHtml += `<tr>
+                <td>${ans.question}</td>
+                <td class="${ans.isCorrect ? 'correct' : 'wrong'}">${ans.userAns}</td>
+                <td class="correct">${ans.correctAns}</td>
+            </tr>`;
+        });
+        document.getElementById('results-body').innerHTML = tableHtml;
     }
 </script>
+
 </body>
 </html>
